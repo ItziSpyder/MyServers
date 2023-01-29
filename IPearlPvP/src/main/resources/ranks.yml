@@ -1,0 +1,22 @@
+#
+#
+# This plugin is the main plugin for IPearlPvP.minehut.gg
+# This plugin was not meant to be made for any other servers.
+#
+# Plugin Author: ImproperIssues
+# Server Owner: ImproperIssues
+#
+#
+ranks:
+  owner:
+    name: "owner"
+    prefix: "§7[§cOwner§7] "
+    suffix: ""
+    color: DARK_RED
+    level: 10
+  moderator:
+    name: "moderator"
+    prefix: "§7[§aModerator§7] "
+    suffix: ""
+    color: DARK_GREEN
+    level: 10

@@ -1,0 +1,51 @@
+name: IPearlPvP
+version: '${version}'
+main: me.improper.ipearlpvp.IPearlPvP
+api-version: 1.17
+authors: [ ImproperIssues ]
+description: Join IPearlPvP.minehut.gg
+website: https://github.com/ItziSpyder
+permissions:
+  ipearlpvp.commands:
+    description: All IPearlPvP commands
+    default: op
+commands:
+  test:
+    description: Test command
+    usage: /test
+    permission: ipearlpvp.commands
+  shop:
+    description: Open the shop menu
+    usage: /shop
+    aliases:
+      - buy
+      - store
+  bal:
+    description: Get the balance of a player
+    usage: /bal
+    aliases:
+      - balance
+  stats:
+    description: Get the statistics of a player
+    usage: /stats
+    aliases:
+      - statistics
+  repair:
+    description: Repairs the items in a your inventory
+    usage: /repair
+  addbal:
+    description: Add or subtract a player's balance
+    usage: /addbal <player> <amount>
+    permission: ipearlpvp.commands
+  setbal:
+    description: Set a player's balance
+    usage: /setbal <player> <amount>
+    permission: ipearlpvp.commands
+  togglemapreset:
+    description: Toggle map reset timer
+    usage: /togglemapreset
+    permission: ipearlpvp.commands
+  resetmap:
+    description: Reset the map
+    usage: /resetmap
+    permission: ipearlpvp.commands

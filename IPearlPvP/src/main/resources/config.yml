@@ -1,0 +1,76 @@
+#
+#
+# This plugin is the main plugin for IPearlPvP.minehut.gg
+# This plugin was not meant to be made for any other servers.
+#
+# Plugin Author: ImproperIssues
+# Server Owner: ImproperIssues
+#
+#
+config:
+  plugin:
+    prefix: "§7[§6i§ePearl§6PvP§7] "
+  messages:
+    join:
+      - "§8[§a+§8]§7 %player% has joined!"
+      - "§8[§a+§8]§7 %player% has landed!"
+      - "§8[§a+§8]§7 Earth to %player%!"
+      - "§8[§a+§8]§7 A wild %player% has appeared!"
+      - "§8[§a+§8]§7 Welcome, %player%!"
+    leave:
+      - "§8[§c-§8]§7 See ya, %player%!"
+      - "§8[§c-§8]§7 %player% has left!"
+      - "§8[§c-§8]§7 See you next time, %player%!"
+      - "§8[§c-§8]§7 %player% left the server!"
+      - "§8[§c-§8]§7 %player% really rage quit ☠ ☠ ☠"
+    null_death:
+      - "§8[§6☠§8]§7 Rip %player%!"
+      - "§8[§6☠§8]§7 %player% has died!"
+      - "§8[§6☠§8]§7 %player% fell off!"
+      - "§8[§6☠§8]§7 EE %player%!"
+      - "§8[§6☠§8]§7 %player% thought their keyboard was edible!"
+      - "§8[§6☠§8]§7 %player% died whilst fighting their inner demons ☠ ☠"
+      - "§8[§6☠§8]§7 Youngboy better %player%"
+    death:
+      - "§8[§6☠§e⚔§8]§7 %player% died to %killer%!"
+      - "§8[§6☠§e⚔§8]§7 %player% was no match for %killer%!"
+      - "§8[§6☠§e⚔§8]§7 %player% was goofed up by %killer%!"
+      - "§8[§6☠§e⚔§8]§7 %player% tripped in front of %killer%!"
+      - "§8[§6☠§e⚔§8]§7 %killer% showed no mercy for %player%!"
+      - "§8[§6☠§e⚔§8]§7 %player% took the L to %killer%!"
+      - "§8[§6☠§e⚔§8]§7 %killer% ez'd %player%!"
+    death_title:
+      - "§6Nahhhhh -> §eThey got lucky!"
+      - "§6WOW -> §eYou really gon let that slide?"
+      - "§6Rip -> §eMaybe you just suck..."
+      - "§6Okayyy -> §eWe all know that they aren't really that good"
+      - "§6Bruhhh -> §eI guess you slipped..."
+      - "§6NAHHHH -> §eGet them back!"
+  gameplay:
+    map_reset_interval: 1800
+    reset_map_commands:
+      - structure load_safely map
+    server_on_map_reset:
+      - example-command
+    players_on_map_reset:
+      - /spawn
+      - /bal
+      - /stats
+      - /shop
+      - /repair
+    starter_money: 1000
+    combat_timer: 20
+    combat_command_blacklist:
+      - /spawn
+      - /tpa
+      - /tpahere
+      - /tphere
+      - /tpask
+      - /warp
+      - /fly
+  player:
+    on_join_send:
+      - /spawn
+      - /shop
+      - /bal
+
