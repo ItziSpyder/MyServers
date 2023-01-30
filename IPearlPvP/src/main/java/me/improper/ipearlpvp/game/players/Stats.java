@@ -4,14 +4,12 @@ import me.improper.ipearlpvp.IPearlPvP;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import java.io.File;
+import java.io.*;
 import java.util.UUID;
 
-public class Stats {
+public class Stats implements Serializable {
 
     private String player;
     private String uuid;
@@ -20,34 +18,40 @@ public class Stats {
     private int killStreak;
     private double balance;
 
+    public static final long serializationId = 53283642412313131L;
 
 
     public Stats(Player player) {
-        File file = IPearlPvP.getStatistics();
-        FileConfiguration data = YamlConfiguration.loadConfiguration(file);
-        if (data.getConfigurationSection("stats." + player.getUniqueId()) == null) {
+        File file = new File("plugins/IPearlPvP/stats/" + player.getUniqueId() + ".stats");
+        if (!file.exists()) {
             this.player = player.getName();
             this.uuid = player.getUniqueId().toString();
             this.kills = 0;
             this.deaths = 0;
             this.killStreak = 0;
             this.balance = 0.0;
-            player.sendMessage(IPearlPvP.STARTER + ChatColor.GOLD + "You've created a new statistics profile!");
             return;
         }
-        this.player = data.getString("stats." + player.getUniqueId() + ".player");
-        this.uuid = data.getString("stats." + player.getUniqueId() + ".uuid");
-        this.kills = data.getInt("stats." + player.getUniqueId() + ".kills");
-        this.deaths = data.getInt("stats." + player.getUniqueId() + ".deaths");
-        this.killStreak = data.getInt("stats." + player.getUniqueId() + ".killStreak");
-        this.balance = data.getDouble("stats." + player.getUniqueId() + ".balance");
-        this.save();
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            BufferedInputStream bis = new BufferedInputStream(fis);
+            ObjectInputStream ois = new ObjectInputStream(bis);
+            Stats stats = (Stats) ois.readObject();
+            this.player = stats.player;
+            this.uuid = stats.uuid;
+            this.kills = stats.kills;
+            this.deaths = stats.deaths;
+            this.killStreak = stats.killStreak;
+            this.balance = stats.balance;
+            ois.close();
+        } catch (Exception exception) {
+            this.getPlayer().sendMessage(IPearlPvP.STARTER + ChatColor.RED + "Failed to load ur statistics file! Error: " + exception.getMessage());
+        }
     }
 
     public Stats(OfflinePlayer player) {
-        File file = IPearlPvP.getStatistics();
-        FileConfiguration data = YamlConfiguration.loadConfiguration(file);
-        if (data.getConfigurationSection("stats." + player.getUniqueId()) == null) {
+        File file = new File("plugins/IPearlPvP/stats/" + player.getUniqueId() + ".stats");
+        if (!file.exists()) {
             this.player = player.getName();
             this.uuid = player.getUniqueId().toString();
             this.kills = 0;
@@ -56,26 +60,36 @@ public class Stats {
             this.balance = 0.0;
             return;
         }
-        this.player = data.getString("stats." + player.getUniqueId() + ".player");
-        this.uuid = data.getString("stats." + player.getUniqueId() + ".uuid");
-        this.kills = data.getInt("stats." + player.getUniqueId() + ".kills");
-        this.deaths = data.getInt("stats." + player.getUniqueId() + ".deaths");
-        this.killStreak = data.getInt("stats." + player.getUniqueId() + ".killStreak");
-        this.balance = data.getDouble("stats." + player.getUniqueId() + ".balance");
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            BufferedInputStream bis = new BufferedInputStream(fis);
+            ObjectInputStream ois = new ObjectInputStream(bis);
+            Stats stats = (Stats) ois.readObject();
+            this.player = stats.player;
+            this.uuid = stats.uuid;
+            this.kills = stats.kills;
+            this.deaths = stats.deaths;
+            this.killStreak = stats.killStreak;
+            this.balance = stats.balance;
+            ois.close();
+        } catch (Exception exception) {
+            this.getPlayer().sendMessage(IPearlPvP.STARTER + ChatColor.RED + "Failed to load ur statistics file! Error: " + exception.getMessage());
+        }
     }
 
     public void save() {
         try {
-            File file = IPearlPvP.getStatistics();
-            FileConfiguration data = YamlConfiguration.loadConfiguration(file);
-            data.set("stats." + this.uuid + ".player",this.player);
-            data.set("stats." + this.uuid + ".uuid",this.uuid);
-            data.set("stats." + this.uuid + ".kills",this.kills);
-            data.set("stats." + this.uuid + ".deaths",this.deaths);
-            data.set("stats." + this.uuid + ".killStreak",this.killStreak);
-            data.set("stats." + this.uuid + ".balance",this.balance);
-            data.save(file);
-        } catch (Exception exception) {}
+            File file = new File("plugins/IPearlPvP/stats/" + this.uuid + ".stats");
+            if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
+            if (!file.exists()) file.createNewFile();
+            FileOutputStream fos = new FileOutputStream(file);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+            oos.writeObject(this);
+            oos.close();
+        } catch (Exception exception) {
+            this.getPlayer().sendMessage(IPearlPvP.STARTER + ChatColor.RED + "Failed to save ur statistics file! Error: " + exception.getMessage());
+        }
     }
 
     public double getKdr() {

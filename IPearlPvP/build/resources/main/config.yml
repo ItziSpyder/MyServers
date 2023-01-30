@@ -48,17 +48,16 @@ config:
       - "§6NAHHHH -> §eGet them back!"
   gameplay:
     map_reset_interval: 1800
-    reset_map_commands:
+    reset_map_commands: # Randomly picked
       - structure load_safely map
-    server_on_map_reset:
+    server_on_map_reset: # All picked
       - example-command
     players_on_map_reset:
       - /spawn
       - /bal
       - /stats
       - /shop
-      - /repair
-    starter_money: 1000
+    starter_money: 2000
     combat_timer: 20
     combat_command_blacklist:
       - /spawn

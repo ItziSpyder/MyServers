@@ -52,7 +52,7 @@ public class Config {
             return  CONFIG.getStringList("config.gameplay.combat_command_blacklist");
         }
         public static String getMapResetCommand() {
-            List<String> list =  CONFIG.getStringList("config.gameplay.reset_map_commands");
+            List<String> list = CONFIG.getStringList("config.gameplay.reset_map_commands");
             return list.get(ran(list.size()));
         }
         public static List<String> getServerMapReset() {

@@ -2,6 +2,7 @@ package me.improper.ipearlpvp.server;
 
 import me.improper.ipearlpvp.IPearlPvP;
 import me.improper.ipearlpvp.data.Config;
+import me.improper.ipearlpvp.events.OnDamage;
 import me.improper.ipearlpvp.game.players.Stats;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -48,18 +49,20 @@ public class ServerUtils {
                 Objective objective = board.registerNewObjective("sidebar","dummy", IPearlPvP.STARTER);
                 objective.setDisplaySlot(DisplaySlot.SIDEBAR);
                 Stats stats = new Stats(p);
+
                 Score score1 = objective.getScore("");
                 Score score2 = objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + p.getName());
                 Score score3 = objective.getScore(ChatColor.YELLOW + "   - Kills: " + ChatColor.WHITE + stats.getKills());
                 Score score4 = objective.getScore(ChatColor.YELLOW + "   - Deaths: " + ChatColor.WHITE + stats.getDeaths());
                 Score score5 = objective.getScore(ChatColor.YELLOW + "   - KDR: " + ChatColor.WHITE + stats.getKdr());
                 Score score6 = objective.getScore(ChatColor.YELLOW + "   - Balance: " + ChatColor.GREEN + stats.getStringBal());
-                Score score7 = objective.getScore(ChatColor.YELLOW + " ");
-                Score score8 = objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Server");
-                Score score9 = objective.getScore(ChatColor.YELLOW + "   - Map Reset: " + ChatColor.WHITE + ServerUtils.MAPRESET.getTimeLeft());
-                Score score10 = objective.getScore(ChatColor.YELLOW + "   - Top: " + ChatColor.WHITE + mostKs().getName());
-                Score score11 = objective.getScore(ChatColor.YELLOW + "   - Online: " + ChatColor.WHITE + Bukkit.getOnlinePlayers().size());
-                Score score12 = objective.getScore(ChatColor.YELLOW + "  ");
+                Score score7 = objective.getScore(ChatColor.YELLOW + "   - Killstreak: " + ChatColor.WHITE + stats.getKillStreak());
+                Score score8 = objective.getScore(ChatColor.YELLOW + " ");
+                Score score9 = objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Server");
+                Score score10 = objective.getScore(ChatColor.YELLOW + "   - Map Reset: " + ChatColor.WHITE + Math.floor(MAPRESET.getTimeLeft()));
+                Score score11 = objective.getScore(ChatColor.YELLOW + "   - Top: " + ChatColor.WHITE + mostKs().getName());
+                Score score12 = objective.getScore(ChatColor.YELLOW + "   - Online: " + ChatColor.WHITE + Bukkit.getOnlinePlayers().size());
+                Score score13 = objective.getScore(ChatColor.YELLOW + "  ");
 
                 score1.setScore(10);
                 score2.setScore(9);
@@ -70,9 +73,10 @@ public class ServerUtils {
                 score7.setScore(4);
                 score8.setScore(3);
                 score9.setScore(2);
-                score10.setScore(1);
+                if (MAPRESET.RESUME) score10.setScore(1);
                 score11.setScore(0);
                 score12.setScore(-1);
+                score13.setScore(-2);
 
                 p.setScoreboard(board);
             }
@@ -92,29 +96,27 @@ public class ServerUtils {
             NEXTRESET = System.currentTimeMillis() + (11 * 1000);
         }
         public static void checkTimer() {
-            if (!RESUME) return;
             if (getTimeLeft() <= 0) {
                 ServerSound end = new ServerSound(null, Sound.ENTITY_WITHER_AMBIENT,10,0.1F);
                 end.playAllAt();
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     p.setGameMode(GameMode.SURVIVAL);
                     p.sendTitle(ChatColor.GOLD + mostKs().getName(), ChatColor.YELLOW + "has the highest kill streak!",10,100,10);
-                    for (String cmd : Config.GAMEPLAY.getPlayersMapReset()) {
-                        p.chat(cmd);
-                    }
+                    OnDamage.COMBAT.removeCombat(p);
+                    for (String cmd : Config.GAMEPLAY.getPlayersMapReset()) p.chat(cmd);
                 }
                 resetTimer();
+            }
+            else if (Math.floor(getTimeLeft()) == 10) {
+                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),Config.GAMEPLAY.getMapResetCommand());
+                for (String cmd : Config.GAMEPLAY.getServerMapReset()) {
+                    Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),cmd);
+                }
             }
             else if (getTimeLeft() > 0 && getTimeLeft() <= 10) {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     p.setGameMode(GameMode.SPECTATOR);
                     p.sendTitle(ChatColor.GOLD + "Map resetting...",ChatColor.YELLOW + "" + getTimeLeft(),0,20,0);
-                }
-            }
-            else if (getTimeLeft() == 10) {
-                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),Config.GAMEPLAY.getMapResetCommand());
-                for (String cmd : Config.GAMEPLAY.getServerMapReset()) {
-                    Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),cmd);
                 }
             }
         }

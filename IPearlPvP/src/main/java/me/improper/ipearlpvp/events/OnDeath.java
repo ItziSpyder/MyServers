@@ -5,6 +5,7 @@ import me.improper.ipearlpvp.data.Config;
 import me.improper.ipearlpvp.game.displays.Displays;
 import me.improper.ipearlpvp.game.players.Stats;
 import me.improper.ipearlpvp.server.ServerSound;
+import me.improper.ipearlpvp.server.ServerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -20,13 +21,16 @@ public class OnDeath implements Listener {
         try {
             Player p = e.getEntity().getPlayer();
             Player k = e.getEntity().getKiller();
+            Player mostKs = ServerUtils.mostKs();
             OnDamage.COMBAT.removeCombat(p);
 
             if (k == null) {
+                // death message
                 e.setDeathMessage(Config.MESSAGES.getNullDeath()
                         .replaceAll("%player%",p.getName()));
             }
             else {
+                // death message and statistics
                 OnDamage.COMBAT.removeCombat(k);
                 e.setDeathMessage(Config.MESSAGES.getDeath()
                         .replaceAll("%player%",p.getName())
@@ -37,6 +41,7 @@ public class OnDeath implements Listener {
                 stats.setKillStreak(stats.getKillStreak() + 1);
                 stats.save();
 
+                // death chat info
                 if (stats.getKillStreak() >= 3) {
                     Bukkit.broadcastMessage(IPearlPvP.STARTER +
                             ChatColor.YELLOW + k.getName() + " " +
@@ -44,7 +49,14 @@ public class OnDeath implements Listener {
                             ChatColor.YELLOW + stats.getKillStreak());
                     k.sendTitle(ChatColor.GOLD + "" + ChatColor.ITALIC + "Kill Streak!",ChatColor.YELLOW + "x" + stats.getKillStreak(),10,60,10);
                 }
+                if (mostKs == p) {
+                    Bukkit.broadcastMessage(IPearlPvP.STARTER +
+                            ChatColor.YELLOW + k.getName() + " " +
+                            ChatColor.GOLD + "has killed top player " +
+                            ChatColor.YELLOW + mostKs.getName());
+                }
 
+                // death cosmetics
                 ServerSound villager = new ServerSound(p.getLocation(), Sound.ENTITY_VILLAGER_DEATH,10,10);
                 ServerSound glass = new ServerSound(p.getLocation(), Sound.BLOCK_GLASS_BREAK,10,0.1F);
                 ServerSound portal = new ServerSound(p.getLocation(), Sound.BLOCK_PORTAL_TRAVEL,10,1);
@@ -56,7 +68,15 @@ public class OnDeath implements Listener {
                     p.sendTitle(title[0].trim(),title[1].trim(),10,60,10);
                 },10);
             }
+
+            // victim statistics
             Stats stats = new Stats(p);
+            if (stats.getKillStreak() >= 3) {
+                Bukkit.broadcastMessage(IPearlPvP.STARTER +
+                        ChatColor.YELLOW + p.getName() + " " +
+                        ChatColor.GOLD + "has died with a kill streak of " +
+                        ChatColor.YELLOW + stats.getKillStreak());
+            }
             stats.setDeaths(stats.getDeaths() + 1);
             stats.setBalance(stats.getBalance() + 50);
             stats.setKillStreak(0);

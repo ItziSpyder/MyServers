@@ -11,8 +11,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
-
 public final class IPearlPvP extends JavaPlugin {
 
     public static String STARTER;
@@ -29,6 +27,7 @@ public final class IPearlPvP extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new OnInventory(),this);
         Bukkit.getPluginManager().registerEvents(new OnDamage(),this);
         Bukkit.getPluginManager().registerEvents(new OnCommand(),this);
+        Bukkit.getPluginManager().registerEvents(new OnClick(),this);
 
         // Files
         getConfig().options().copyDefaults();
@@ -43,23 +42,17 @@ public final class IPearlPvP extends JavaPlugin {
         getCommand("bal").setTabCompleter(new Tabs());
         getCommand("stats").setExecutor(new Commands());
         getCommand("stats").setTabCompleter(new Tabs());
-        getCommand("addbal").setExecutor(new Commands());
-        getCommand("addbal").setTabCompleter(new Tabs());
-        getCommand("setbal").setExecutor(new Commands());
-        getCommand("setbal").setTabCompleter(new Tabs());
-        getCommand("togglemapreset").setExecutor(new Commands());
-        getCommand("togglemapreset").setTabCompleter(new Tabs());
         getCommand("repair").setExecutor(new Commands());
         getCommand("repair").setTabCompleter(new Tabs());
-        getCommand("resetmap").setExecutor(new Commands());
-        getCommand("resetmap").setTabCompleter(new Tabs());
+        getCommand("gamemap").setExecutor(new Commands());
+        getCommand("gamemap").setTabCompleter(new Tabs());
 
         // Per second loop
         new BukkitRunnable() {
             @Override
             public void run() {
                 OnDamage.COMBAT.checkCombat();
-                ServerUtils.MAPRESET.checkTimer();
+                if (ServerUtils.MAPRESET.RESUME) ServerUtils.MAPRESET.checkTimer();
                 ServerUtils.SCOREBOARD.checkLoop();
             }
         }.runTaskTimer(this,0,20);
@@ -72,14 +65,5 @@ public final class IPearlPvP extends JavaPlugin {
 
     public static Plugin getInstance() {
         return Bukkit.getPluginManager().getPlugin("IPearlPvP");
-    }
-
-    public static File getStatistics() {
-        File file = new File("plugins/IPearlPvP/statistics.yml");
-        try {
-            if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
-            if (!file.exists()) file.createNewFile();
-        } catch (Exception exception) {}
-        return file;
     }
 }

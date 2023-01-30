@@ -33,19 +33,8 @@ commands:
   repair:
     description: Repairs the items in a your inventory
     usage: /repair
-  addbal:
-    description: Add or subtract a player's balance
-    usage: /addbal <player> <amount>
-    permission: ipearlpvp.commands
-  setbal:
-    description: Set a player's balance
-    usage: /setbal <player> <amount>
-    permission: ipearlpvp.commands
-  togglemapreset:
-    description: Toggle map reset timer
-    usage: /togglemapreset
-    permission: ipearlpvp.commands
-  resetmap:
-    description: Reset the map
-    usage: /resetmap
-    permission: ipearlpvp.commands
+  gamemap:
+    description: Manage game reset map timer
+    usage: /gamemap <action>
+    aliases:
+      - map

@@ -21,7 +21,8 @@ public class OnJoin implements Listener {
         Player p = e.getPlayer();
         p.setGameMode(GameMode.SURVIVAL);
 
-        e.setJoinMessage(Config.MESSAGES.getJoin()
+        if (Config.MESSAGES.getJoin().equals("NONE")) e.setJoinMessage(null);
+        else e.setJoinMessage(Config.MESSAGES.getJoin()
                 .replaceAll("%player%",p.getName()));
         for (String msg : Config.PLAYER.getJoinChatCommands()) p.chat(msg);
         ServerSound join = new ServerSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP,10,0.1F);
@@ -62,7 +63,9 @@ public class OnJoin implements Listener {
     @EventHandler
     public static void onPlayerLeave(PlayerQuitEvent e) {
         Player p = e.getPlayer();
-        e.setQuitMessage(Config.MESSAGES.getLeave()
+
+        if (Config.MESSAGES.getLeave().equals("NONE")) e.setQuitMessage(null);
+        else e.setQuitMessage(Config.MESSAGES.getLeave()
                 .replaceAll("%player%",p.getName()));
         if (OnDamage.COMBAT.inCombat(p)) {
             Bukkit.broadcastMessage(IPearlPvP.STARTER +

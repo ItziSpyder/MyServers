@@ -81,7 +81,8 @@ public class Shop {
         for (Material type : list) {
             ShopItem item = new ShopItem(type);
             String name = type.name();
-            item.setEnchants(Enchantment.PROTECTION_ENVIRONMENTAL,4,true);
+            if (name.contains("LEGGINGS")) item.setEnchants(Enchantment.PROTECTION_EXPLOSIONS,4,true);
+            else item.setEnchants(Enchantment.PROTECTION_ENVIRONMENTAL,4,true);
             item.setEnchants(Enchantment.DURABILITY,3,true);
             item.setEnchants(Enchantment.MENDING,1,true);
             if (name.contains("LEATHER")) item.setPrice(5);
@@ -132,6 +133,7 @@ public class Shop {
             else if (name.contains("CROSSBOW")) {
                 item.setEnchants(Enchantment.PIERCING,4,false);
                 item.setEnchants(Enchantment.QUICK_CHARGE,3,false);
+                item.setEnchants(Enchantment.MULTISHOT,1,false);
             }
             else if (name.contains("BOW")) {
                 item.setEnchants(Enchantment.ARROW_DAMAGE,5,false);
@@ -206,7 +208,7 @@ public class Shop {
                 item.setPrice(10);
                 item.setAmount(64);
             }
-            else if (name.contains("ENCHANTED_GOLDEN_APPLE")) {
+            else if (name.contains("ENCHANTED_GOLDEN_APPLE") || name.contains("CHORUS_FRUIT")) {
                 item.setPrice(200);
                 item.setAmount(64);
             }
@@ -284,6 +286,7 @@ public class Shop {
                 (name.contains("OAK_LOG") && !name.contains("_OAK")) ||
                 name.contains("EXPERIENCE_BOTTLE") ||
                 name.contains("TOTEM") ||
-                name.contains("COBWEB");
+                name.contains("COBWEB") ||
+                (name.contains("CHORUS_FRUIT") && !name.contains("POPPED"));
     }
 }

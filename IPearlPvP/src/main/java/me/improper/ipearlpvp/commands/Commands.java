@@ -1,7 +1,7 @@
 package me.improper.ipearlpvp.commands;
 
 import me.improper.ipearlpvp.IPearlPvP;
-import me.improper.ipearlpvp.game.displays.Displays;
+import me.improper.ipearlpvp.data.Config;
 import me.improper.ipearlpvp.game.inventory.Shop;
 import me.improper.ipearlpvp.game.players.Stats;
 import me.improper.ipearlpvp.server.ServerUtils;
@@ -25,28 +25,74 @@ public class Commands implements CommandExecutor {
         try {
             switch (commandName) {
                 case "test" -> {
-                    Player p = (Player) sender;
-                    Displays.sprinkle(p.getLocation());
+                    Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), Config.GAMEPLAY.getMapResetCommand());
+                    for (String cmd : Config.GAMEPLAY.getServerMapReset()) {
+                        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),cmd);
+                    }
                     return true;
                 }
                 case "shop" -> {
                     Player p = (Player) sender;
                     p.openInventory(Shop.SHOPMENU);
+                    return true;
                 }
                 case "bal" -> {
                     OfflinePlayer p = (OfflinePlayer) sender;
-                    p = args.length == 0 ? p : Bukkit.getOfflinePlayer(args[0]);
+                    p = args.length < 1 ? p : Bukkit.getOfflinePlayer(args[0]);
                     Stats stats = new Stats(p);
-                    sender.sendMessage(IPearlPvP.STARTER +
-                            ChatColor.YELLOW + p.getName() + "'s " +
-                            ChatColor.GOLD + "balance is " +
-                            ChatColor.GREEN + stats.getStringBal());
+                    if (args.length <= 1) {
+                        sender.sendMessage(IPearlPvP.STARTER +
+                                ChatColor.YELLOW + p.getName() + "'s " +
+                                ChatColor.GOLD + "balance is " +
+                                ChatColor.GREEN + stats.getStringBal());
+                        return true;
+                    }
+                    if (!sender.hasPermission("ipearlpvp.commands")) return true;
+                    switch (args[1]) {
+                        case "set" -> {
+                            double amount = Double.parseDouble(args[2]);
+                            stats.setBalance(amount);
+                            stats.save();
+                            sender.sendMessage(IPearlPvP.STARTER +
+                                    ChatColor.YELLOW + p.getName() + "'s " +
+                                    ChatColor.GOLD + "balance is now " +
+                                    ChatColor.GREEN + stats.getStringBal());
+                            return true;
+                        }
+                        case "add" -> {
+                            double amount = Double.parseDouble(args[2]);
+                            stats.setBalance(stats.getBalance() + amount);
+                            stats.save();
+                            sender.sendMessage(IPearlPvP.STARTER +
+                                    ChatColor.YELLOW + p.getName() + "'s " +
+                                    ChatColor.GOLD + "balance is now " +
+                                    ChatColor.GREEN + stats.getStringBal());
+                            return true;
+                        }
+                    }
+                    return true;
                 }
                 case "stats" -> {
                     OfflinePlayer p = (OfflinePlayer) sender;
-                    p = args.length == 0 ? p : Bukkit.getOfflinePlayer(args[0]);
+                    p = args.length < 1 ? p : Bukkit.getOfflinePlayer(args[0]);
                     Stats stats = new Stats(p);
                     StringBuilder builder = new StringBuilder();
+                    if (args.length >= 2) {
+                        if (!sender.hasPermission("ipearlpvp.commands")) return true;
+                        int amount = Integer.parseInt(args[2]);
+                        switch (args[1]) {
+                            case "setkills" -> stats.setKills(amount);
+                            case "setdeaths" -> stats.setDeaths(amount);
+                            case "setstreak" -> stats.setKillStreak(amount);
+                            case "addstreak" -> stats.setKillStreak(stats.getKillStreak() + amount);
+                            case "addkills" -> stats.setKills(stats.getKills() + amount);
+                            case "adddeaths" -> stats.setDeaths(stats.getDeaths() + amount);
+                        }
+                        builder.append(ChatColor.GOLD + "-------------------------\n" +
+                                ChatColor.GOLD + "Modified statistics of:\n" +
+                                ChatColor.YELLOW + p.getName() + " " +
+                                ChatColor.GRAY + "(" + args[1].toLowerCase() + ")\n");
+                    }
                     builder.append(ChatColor.GOLD + "-------------------------\n")
                             .append("   ").append(ChatColor.GOLD + "Player: " + ChatColor.YELLOW + p.getName() + "\n")
                             .append("   ").append(ChatColor.GOLD + "Balance: " + ChatColor.GREEN + stats.getStringBal() + "\n")
@@ -56,34 +102,8 @@ public class Commands implements CommandExecutor {
                             .append("   ").append(ChatColor.GOLD + "Deaths: " + ChatColor.YELLOW + stats.getDeaths() + "\n")
                             .append(ChatColor.GOLD + "-------------------------\n");
                     sender.sendMessage(builder.toString());
-                }
-                case "addbal" -> {
-                    Player p = Bukkit.getPlayer(args[0]);
-                    double amount = Double.parseDouble(args[1]);
-                    Stats stats = new Stats(p);
-                    stats.setBalance(stats.getBalance() + amount);
                     stats.save();
-                    sender.sendMessage(IPearlPvP.STARTER +
-                            ChatColor.YELLOW + p.getName() + "'s " +
-                            ChatColor.GOLD + "balance is now " +
-                            ChatColor.GREEN + stats.getStringBal());
-                }
-                case "setbal" -> {
-                    Player p = Bukkit.getPlayer(args[0]);
-                    double amount = Double.parseDouble(args[1]);
-                    Stats stats = new Stats(p);
-                    stats.setBalance(amount);
-                    stats.save();
-                    sender.sendMessage(IPearlPvP.STARTER +
-                            ChatColor.YELLOW + p.getName() + "'s " +
-                            ChatColor.GOLD + "balance is now " +
-                            ChatColor.GREEN + stats.getStringBal());
-                }
-                case "togglemapreset" -> {
-                    ServerUtils.MAPRESET.RESUME = !ServerUtils.MAPRESET.RESUME;
-                    sender.sendMessage(IPearlPvP.STARTER +
-                            ChatColor.LIGHT_PURPLE + "Map reset timer is now set to: " +
-                            ChatColor.GRAY + ServerUtils.MAPRESET.RESUME);
+                    return true;
                 }
                 case "repair" -> {
                     Player p = (Player) sender;
@@ -111,8 +131,20 @@ public class Commands implements CommandExecutor {
                             ChatColor.GRAY + items);
                     stats.setBalance(stats.getBalance() - 400);
                     stats.save();
+                    return true;
                 }
-                case "resetmap" -> ServerUtils.MAPRESET.resetMap();
+                case "gamemap" -> {
+                    switch (args[0]) {
+                        case "reset" -> ServerUtils.MAPRESET.resetMap();
+                        case "toggle" -> {
+                            ServerUtils.MAPRESET.RESUME = !ServerUtils.MAPRESET.RESUME;
+                            sender.sendMessage(IPearlPvP.STARTER +
+                                    ChatColor.LIGHT_PURPLE + "Map reset timer is now set to: " +
+                                    ChatColor.GRAY + ServerUtils.MAPRESET.RESUME);
+                        }
+                    }
+                    return true;
+                }
             }
             return true;
         }
